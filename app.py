@@ -88,7 +88,7 @@ class Following(db.Model):
 
 @app.route("/users", methods=['GET'])
 def display_all():
-    return User.query.all()
+    return jsonify(User.query.all())
 
 # @app.route('/new', methods = ['GET', 'POST'])
 # def new():
