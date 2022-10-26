@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from flask import Flask, jsonify, render_template, request, url_for, redirect, current_app
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Boolean
@@ -16,8 +17,15 @@ current_app.config["ENV"]
 
 db = SQLAlchemy(app)
 
+@dataclass
 class User(db.Model):
     __tablename__ = "users"
+    uid: int 
+    username: string
+    screenname: string
+    password: string
+    email: string
+    createdat: string
 
     uid = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(200), unique=True, nullable=False)
@@ -26,6 +34,7 @@ class User(db.Model):
     email = db.Column(db.String(200), nullable=False)
     createdat = db.Column(db.DateTime(200), default=datetime.utcnow)
     users_post = db.relationship('Post', backref='user')
+
 
     def __init__(self, username, screenname, password, email):
         self.username = username
@@ -36,8 +45,14 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.username}, {self.screenname}, {self.password}, {self.email}>'
 
+@dataclass
 class Post(db.Model):
     __tablename__ = "post"
+
+    pid: int
+    content: string
+    user_id: int
+    canvas_pid: string
     
     pid = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(500), nullable=False)
@@ -48,9 +63,14 @@ class Post(db.Model):
         self.pid = pid
         self.uid = user_id
         self.content = content
- 
+
+@dataclass
 class Canvas(db.Model):
     __tablename__ = "canvas"
+
+    cid: int
+    instructions: string
+    post_id: int
     
     cid = db.Column(db.Integer, primary_key=True)
     instructions = db.Column(db.String(500), nullable=False) 
@@ -61,6 +81,7 @@ class Canvas(db.Model):
         self.post_id = post_id
         self.instructions = instructions
 
+@dataclass
 class Blocking(db.Model):
     __tablename__ = "blocking"
 
@@ -73,6 +94,7 @@ class Blocking(db.Model):
         self.blockee_uid = blockee_uid
         self.blocked_uid = blocked_uid
 
+@dataclass
 class Following(db.Model):
     __tablename__ = "following"
 
@@ -90,6 +112,12 @@ class Following(db.Model):
 def display_all():
     return jsonify(User.query.all())
 
+@app.route("/test", methods=['GET'])
+def test():
+    return "Hahaha"
+
+
+
 # @app.route('/new', methods = ['GET', 'POST'])
 # def new():
 #     if request.method == 'POST':
@@ -106,6 +134,6 @@ def display_all():
 
 
 if __name__ == "__main__":
-    # db.create_all()
+    db.create_all()
     app.run(debug=True)
 
