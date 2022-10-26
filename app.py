@@ -33,6 +33,9 @@ class User(db.Model):
         self.password = password
         self.email = email
 
+    def __repr__(self):
+        return f'<User {self.username}, {self.screenname}, {self.password}, {self.email}>'
+
 class Post(db.Model):
     __tablename__ = "post"
     
@@ -85,7 +88,7 @@ class Following(db.Model):
 
 @app.route("/users", methods=['GET'])
 def display_all():
-    return jsonify(User.query.all())
+    return User.query.all()
 
 # @app.route('/new', methods = ['GET', 'POST'])
 # def new():
