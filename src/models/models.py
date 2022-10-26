@@ -1,25 +1,8 @@
 from dataclasses import dataclass
-from flask import Flask, jsonify, render_template, request, url_for, redirect, current_app
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Boolean
 from datetime import datetime
+from src import db 
 import string
-
-# app_ctx = app.app_context()
-# app_ctx.push()
-# current_app.config["ENV"]
-
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gxsfadrohqpnss:010bf417fdce3c2640007c67f4054326277b39d16958a568984054cb6fa8cb24@ec2-18-207-37-30.compute-1.amazonaws.com:5432/d5h4drurgvgtk6'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-
-# def app_context():
-#     app = Flask(__name__)
-#     with app.app_context():
-#         yield
-
 
 @dataclass
 class User(db.Model):
@@ -33,6 +16,32 @@ class User(db.Model):
     createdat = db.Column(db.DateTime(200), default=datetime.utcnow)
     users_post = db.relationship('Post', backref='user')
 
+    @staticmethod
+    def create(username, screenname, password, email):
+        """
+        Create new user
+        """
+        new_user = User(username, screenname, password, email)
+        db.session.add(new_user)
+        db.session.commit()
+
+    @staticmethod
+    def get_Users():
+        """
+        return: list of user details
+        """
+        users = [{
+            'uid:' i.uid
+            'username': i.username,
+            'screenname': i.screenname,
+            'password': i.password,
+            'email': i.email,
+            'creatdat' = i.creatdat
+        }
+        for i in User.query.order_by('id').all
+        ]
+        return users
+
 @dataclass
 class Post(db.Model):
     __tablename__ = "post"
@@ -42,6 +51,15 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.uid'))
     canvas_pid = db.relationship('Canvas', backref='post')
 
+    @staticmethod
+    def create(content, user_id, canvas_pid):
+        """
+        Create new post
+        """
+        new_post = Post(content, user_id, canvas_pid)
+        db.session.add(new_post)
+        db.session.commit()
+
 @dataclass 
 class Canvas(db.Model):
     __tablename__ = "canvas"
@@ -49,6 +67,15 @@ class Canvas(db.Model):
     cid = db.Column(db.Integer, primary_key=True)
     instructions = db.Column(db.String(500), nullable=False) 
     post_id = db.Column(db.Integer, db.ForeignKey('post.pid'))
+
+    @staticmethod
+    def create(content, user_id, canvas_pid):
+        """
+        Create new canvas
+        """
+        new_canvas = Canvas(instructions, post_id)
+        db.session.add(new_canvas)
+        db.session.commit()
 
 @dataclass
 class Blocking(db.Model):
@@ -58,6 +85,15 @@ class Blocking(db.Model):
     blockee_uid = db.Column(db.Integer, nullable=False)
     blocked_uid = db.Column(db.Integer, nullable=False)
 
+    @staticmethod
+    def create(blockee_uid, blocked_uid):
+        """
+        Create new instance of a user blocking another user
+        """
+        new_block = Blocking(blockee_uid, blocked_uid)
+        db.session.add(new_block)
+        db.session.commit()
+
 @dataclass
 class Following(db.Model):
     __tablename__ = "following"
@@ -66,27 +102,13 @@ class Following(db.Model):
     followee_uid = db.Column(db.Integer, nullable= False)
     followed_uid = db.Column(db.Integer, nullable= False)
 
+    @staticmethod
+    def create(followee_uid, followee_uid):
+        """
+        Create new instance of a user following another user
+        """
+        new_follow = Following(followee_uid, followee_uid)
+        db.session.add(new_follow)
+        db.session.commit()
 
-@app.route("/users", methods=['GET'])
-def display_all():
-    return jsonify(User.query.all())
-
-# @app.route('/new', methods = ['GET', 'POST'])
-# def new():
-#     if request.method == 'POST':
-#         if not request.form['username'] or not request.form['screenname'] or not request.form['password']:
-#             flash('Please enter all the required fields.', 'error')
-#         else:
-#             user = user(request.form['username'], request.form['screnname'], request.form['password'])
-
-#             db.session.add(user)
-#             db.session.commit()
-#             flash('User added succesfully')
-#             return redirect(url_for('display_all'))
-#         return render_template('new.html')
-
-
-if __name__ == "__main__":
-    # db.create_all()
-    app.run(debug=True)
 
