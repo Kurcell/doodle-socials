@@ -11,10 +11,10 @@ db = SQLAlchemy()
 
 def create_app():
     from . import models, routes
-    
+
     app = Flask(__name__, instance_relative_config=False)
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL').replace("postgres://", "postgresql://", 1)
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app_ctx = app.app_context()
     app_ctx.push()
