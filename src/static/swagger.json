@@ -1,0 +1,105 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Just a Doodle API",
+    "version": "1.0.0",
+    "title": "Just a Doodle API",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "tags": [
+    {
+      "name": "General",
+      "description": ""
+    },
+    {
+      "name": "Users",
+      "description": ""
+    },
+    {
+      "name": "Posts",
+      "description": ""
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "summary": "Returns greeting from API.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content" : {
+              "text/plain":{
+                "schema":{
+                  "type" : "string",
+                  "example": "Welcome to Just a Doodle's Social API!"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Returns all users.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/user"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "user": {
+        "type": "object",
+        "properties": {
+          "createdat": {
+            "type": "string",
+            "format": "date"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "format": "string"
+          },
+          "screenname": {
+            "type": "string",
+            "format": "string"
+          },
+          "uid": {
+            "type": "integer",
+            "format": "integer"
+          },
+          "username": {
+            "type": "string",
+            "format": "string"
+          }
+        }
+      }
+    }
+  }
+}
