@@ -1,10 +1,11 @@
 from .. import db
 from dataclasses import dataclass
 from datetime import datetime
+from flask_login import UserMixin
 import string
 
 @dataclass
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = "users"
     uid: int 
     username: string
