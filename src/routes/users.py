@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, jsonify
 from ..models.models import User
 
 user_bp = Blueprint('users', __name__)
