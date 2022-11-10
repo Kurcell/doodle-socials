@@ -2,6 +2,7 @@ import os
 from flask import Flask, current_app, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_cors import CORS
 
 from dotenv import load_dotenv
 
@@ -10,10 +11,12 @@ load_dotenv()
 # Database setup
 db = SQLAlchemy()
 
+
 def create_app():
     from . import models, routes
 
     app = Flask(__name__, instance_relative_config=False)
+    CORS(app)
 
     SWAGGER_URL = '/swagger'
     API_URL = '/static/swagger.json'

@@ -59,28 +59,34 @@ class Post(db.Model):
     __tablename__ = "post"
 
     pid: int
-    content: string
     user_id: int
-    # canvas_pid: string
+    createdat: datetime
     
     pid = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.String(500), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.uid'))
-    # canvas_pid = db.relationship('Canvas', backref='post')
+    createdat = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __init__(self, pid, user_id, content):
+    def __init__(self, pid, user_id, createdat):
         self.pid = pid
-        self.uid = user_id
-        self.content = content
-        # needs new canvas service id
+        self.user_id = user_id
+        self.createdat = createdat
 
     @staticmethod
-    def create(content, user_id, canvas_pid):
+    def create(user_id):
         """
         Create new post
         """
-        new_post = Post(content, user_id, canvas_pid)
-        db.session.add(new_post)
+        post = Post(None, user_id, None)
+        db.session.add(post)
+        db.session.commit()
+
+    @staticmethod
+    def delete(pid):
+        """
+        Delete existing post
+        """
+        post = Post.query.filter_by(pid = pid).one()
+        db.session.delete(post)
         db.session.commit()
 
 # @dataclass 
