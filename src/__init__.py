@@ -3,6 +3,7 @@ from flask import Flask, current_app, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS
+from flask_login import LoginManager
 
 from dotenv import load_dotenv
 
@@ -17,7 +18,7 @@ def create_app():
 
     app = Flask(__name__, instance_relative_config=False)
     CORS(app)
-
+    
     SWAGGER_URL = '/swagger'
     API_URL = '/static/swagger.json'
     swaggerui_blueprint = get_swaggerui_blueprint(
@@ -37,6 +38,15 @@ def create_app():
 
     models.init_app(app)
     routes.init_app(app)
+    
+    login_manager = LoginManager()
+    login_manager.login.view = 'auth.login'
+    login_manager.init_app(app)
+
+    from .models import User
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
     # with app.app_context():
     #     from src.models.models import User, Post, Blocking, Following
