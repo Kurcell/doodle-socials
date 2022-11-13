@@ -1,5 +1,5 @@
 import os
-from flask import Flask, current_app, send_from_directory
+from flask import Flask, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS
@@ -30,23 +30,25 @@ def create_app():
     )
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
     
+    app.secret_key = "doodle-secret-api"
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL').replace("postgres://", "postgresql://", 1)
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app_ctx = app.app_context()
     app_ctx.push()
     current_app.config["ENV"]
 
-    models.init_app(app)
-    routes.init_app(app)
-    
     login_manager = LoginManager()
-    login_manager.login.view = 'auth.login'
     login_manager.init_app(app)
 
-    from .models import User
+    models.init_app(app)
+    routes.init_app(app)
+
+    from .models.models import User
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
+    
+
 
     # with app.app_context():
     #     from src.models.models import User, Post, Blocking, Following
