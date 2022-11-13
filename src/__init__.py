@@ -17,7 +17,7 @@ def create_app():
     from . import models, routes
 
     app = Flask(__name__, instance_relative_config=False)
-    CORS(app)
+    CORS(app, supports_credentials=True)
     
     SWAGGER_URL = '/swagger'
     API_URL = '/static/swagger.json'
