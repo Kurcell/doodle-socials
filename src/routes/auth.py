@@ -1,4 +1,4 @@
-from flask import Blueprint, request, session
+from flask import Blueprint, request, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from ..models.models import User
@@ -10,6 +10,17 @@ auth_bp = Blueprint('auth', __name__)
 @login_required
 def hello():
     return "Hello, " + current_user.username
+
+@auth_bp.route("/verify", methods=['GET'])
+def verify():
+    if current_user.is_authenticated:
+        user = {
+            'uid': current_user.uid,
+            'username' : current_user.username,
+            'screenname' : current_user.screenname
+            }
+        return { 'auth': True, 'user': user }
+    return { 'auth': False, 'user': None}
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -56,6 +67,8 @@ def register():
     #add new user to db
     db.session.add(new_user)
     db.session.commit()
+
+    login_user(new_user)
     
     return {
             'message':  'Signed up as a new user!'
