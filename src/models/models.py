@@ -9,50 +9,59 @@ class User(db.Model):
     uid: int 
     username: string
     screenname: string
+    profile: string
     password: string
     email: string
     createdat: string
 
     uid = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(200), unique=True, nullable=False)
-    screenname = db.Column(db.String(200), unique=False, nullable=False)
+    screenname = db.Column(db.String(200), nullable=False)
+    profile = db.Column(db.String())
     password = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(200), nullable=False)
     createdat = db.Column(db.DateTime(200), default=datetime.utcnow)
     users_post = db.relationship('Post', backref='user')
 
-    def __init__(self, username, screenname, password, email):
+    def __init__(self, username, screenname, profile, password, email):
         self.username = username
         self.screenname = screenname
+        self.profile = profile
         self.password = password
         self.email = email
 
     @staticmethod
-    def create(username, screenname, password, email):
+    def create(username, screenname, profile, password, email):
         """
         Create new user
         """
-        new_user = User(username, screenname, password, email)
+        new_user = User(username, screenname, profile, password, email)
         db.session.add(new_user)
         db.session.commit()
-
+    
     @staticmethod
-    def get_users():
+    def update(uid, username, screenname, profile, password, email):
         """
-        return: list of user details
+        Update existing user
         """
-        users = [
-            {
-                'uid': i.id,
-                'username': i.username,
-                'screenname': i.screenname,
-                'password': i.password,
-                'email': i.email,
-                'creatdat': i.creatdat, # there was a comma here, he will be missed
-            }
-            for i in User.query.order_by('id').all
-        ]
-        return users
+        user = User.query.filter_by(uid = uid).one()
+        user.username = username if username is not None else user.username
+        user.screenname = screenname if screenname is not None else user.screenname
+        user.profile = profile if profile is not None else user.profile
+        user.password = password if password is not None else user.password
+        user.email = email if email is not None else user.email
+        db.session.commit()
+        return user
+    
+    @staticmethod
+    def delete(uid):
+        """
+        Delete existing user
+        """
+        user = User.query.filter_by(uid = uid).one()
+        db.session.delete(user)
+        db.session.commit()
+        return user
 
 @dataclass
 class Post(db.Model):
