@@ -1,10 +1,11 @@
 from .. import db
 from dataclasses import dataclass
 from datetime import datetime
+from flask_login import UserMixin
 import string
 
 @dataclass
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = "users"
     uid: int 
     username: string
@@ -19,8 +20,8 @@ class User(db.Model):
     screenname = db.Column(db.String(200), nullable=False)
     profile = db.Column(db.String())
     password = db.Column(db.String(200), nullable=False)
-    email = db.Column(db.String(200), nullable=False)
-    createdat = db.Column(db.DateTime(200), default=datetime.utcnow)
+    email = db.Column(db.String(200),unique=True, nullable=False)
+    createdat = db.Column(db.DateTime(200), nullable=False, default=datetime.utcnow)
     users_post = db.relationship('Post', backref='user')
 
     def __init__(self, username, screenname, profile, password, email):
@@ -29,6 +30,9 @@ class User(db.Model):
         self.profile = profile
         self.password = password
         self.email = email
+    
+    def get_id(self):
+        return self.uid
 
     @staticmethod
     def create(username, screenname, profile, password, email):
