@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "Just a Doodle API",
+    "description": "Routes for the Social aspects of the Dudol platform.",
     "version": "1.0.0",
-    "title": "Just a Doodle API",
+    "title": "Dudol Social API",
     "license": {
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
@@ -11,23 +11,23 @@
   },
   "tags": [
     {
-      "name": "General",
-      "description": ""
+      "name": "Auth",
+      "description": "Authentication and Authorization routes."
     },
     {
       "name": "Users",
-      "description": ""
+      "description": "User Account Details."
     },
     {
       "name": "Posts",
-      "description": ""
+      "description": "Containers for doodles."
     }
   ],
   "paths": {
     "/": {
       "get": {
         "tags": [
-          "General"
+          "Auth"
         ],
         "summary": "Returns greeting from API.",
         "responses": {
@@ -37,7 +37,161 @@
               "text/plain":{
                 "schema":{
                   "type" : "string",
-                  "example": "Welcome to Just a Doodle's Social API!"
+                  "example": "Welcome to Dudol's Social API!"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/hello": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Returns greeting from API if the user is logged in.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content" : {
+              "text/plain":{
+                "schema":{
+                  "type" : "string",
+                  "example": "Hello, <Name>!"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Verifies that a user is logged in.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content" : {
+              "text/plain":{
+                "schema":{
+                  "$ref": "#/components/schemas/authBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Registers a user.",
+        "requestBody": {
+          "description": "User Register Request Body.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userPostBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content" : {
+              "text/plain":{
+                "schema":{
+                  "$ref": "#/components/schemas/idBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logs in a user.",
+        "requestBody": {
+          "description": "User Login Request Body.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/loginBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content" : {
+              "text/plain":{
+                "schema":{
+                  "$ref": "#/components/schemas/idBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logs out a user.",
+        "responses": {
+          "201": {
+            "description": "OK",
+            "content" : {
+              "text/plain":{
+                "schema":{
+                  "$ref": "#/components/schemas/idBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Creates a user with given information.",
+        "requestBody": {
+          "description": "User Create Request Body.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userPostBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
                 }
               }
             }
@@ -50,7 +204,7 @@
         "tags": [
           "Users"
         ],
-        "summary": "Returns all users.",
+        "summary": "Reads all users from database.",
         "responses": {
           "200": {
             "description": "OK",
@@ -67,16 +221,313 @@
           }
         }
       }
+    },
+    "/user/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Finds a user of the given id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the user to retrieve.",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Updates a user of the given id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the user to update.",
+            "type": "string"
+          }
+        ],
+        "requestBody": {
+          "description": "User Update Request Body.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userPostBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Deletes a user of the given id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the user to delete.",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/post": {
+      "post": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Creates a post with given information.",
+        "requestBody": {
+          "description": "Post Create Request Body.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postPostBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts": {
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Reads all posts from database.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/post"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/post/{id}": {
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Finds a post of the given id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the post to retrieve.",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/post"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Updates a post of the given id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the post to update.",
+            "type": "string"
+          }
+        ],
+        "requestBody": {
+          "description": "Post Update Request Body.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postPostBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/post"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Deletes a post of the given id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the post to delete.",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/post"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "idBody": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "string"
+          }
+        }
+      },
+      "messageBody": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "format": "string"
+          }
+        }
+      },
+      "loginBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "string"
+          },
+          "password": {
+            "type": "string",
+            "format": "string"
+          }
+        }
+      },
+      "authBody": {
+        "type": "object",
+        "properties": {
+          "auth": {
+            "type": "string",
+            "format": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/user"
+          }
+        }
+      },
       "user": {
         "type": "object",
         "properties": {
-          "createdat": {
+          "uid": {
+            "type": "integer",
+            "format": "integer"
+          },
+          "username": {
             "type": "string",
-            "format": "date"
+            "format": "string"
+          },
+          "screenname": {
+            "type": "string",
+            "format": "string"
+          },
+          "profile": {
+            "type": "string",
+            "format": "string"
           },
           "email": {
             "type": "string",
@@ -86,15 +537,58 @@
             "type": "string",
             "format": "string"
           },
+          "createdat": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "userPostBody": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "format": "string"
+          },
           "screenname": {
             "type": "string",
             "format": "string"
           },
-          "uid": {
+          "profile": {
+            "type": "string",
+            "format": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "format": "string"
+          }
+        }
+      },
+      "post": {
+        "type": "object",
+        "properties": {
+          "pid": {
             "type": "integer",
             "format": "integer"
           },
-          "username": {
+          "user_id": {
+            "type": "string",
+            "format": "string"
+          },
+          "createdat": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "postPostBody": {
+        "type": "object",
+        "properties": {
+          "user_id": {
             "type": "string",
             "format": "string"
           }

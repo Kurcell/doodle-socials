@@ -10,6 +10,7 @@ class User(db.Model, UserMixin):
     uid: int 
     username: string
     screenname: string
+    profile: string
     password: string
     email: string
     createdat: string
@@ -17,14 +18,16 @@ class User(db.Model, UserMixin):
     uid = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(200), unique=True, nullable=False)
     screenname = db.Column(db.String(200), nullable=False)
+    profile = db.Column(db.String())
     password = db.Column(db.String(200), nullable=False)
     email = db.Column(db.String(200),unique=True, nullable=False)
     createdat = db.Column(db.DateTime(200), nullable=False, default=datetime.utcnow)
     users_post = db.relationship('Post', backref='user')
 
-    def __init__(self, username, screenname, password, email):
+    def __init__(self, username, screenname, profile, password, email):
         self.username = username
         self.screenname = screenname
+        self.profile = profile
         self.password = password
         self.email = email
     
@@ -32,31 +35,37 @@ class User(db.Model, UserMixin):
         return self.uid
 
     @staticmethod
-    def create(username, screenname, password, email):
+    def create(username, screenname, profile, password, email):
         """
         Create new user
         """
-        new_user = User(username, screenname, password, email)
+        new_user = User(username, screenname, profile, password, email)
         db.session.add(new_user)
         db.session.commit()
-
+    
     @staticmethod
-    def get_users():
+    def update(uid, username, screenname, profile, password, email):
         """
-        return: list of user details
+        Update existing user
         """
-        users = [
-            {
-                'uid': i.uid,
-                'username': i.username,
-                'screenname': i.screenname,
-                'password': i.password,
-                'email': i.email,
-                'creatdat': i.creatdat, # there was a comma here, he will be missed
-            }
-            for i in User.query.order_by('id').all
-        ]
-        return users
+        user = User.query.filter_by(uid = uid).one()
+        user.username = username if username is not None else user.username
+        user.screenname = screenname if screenname is not None else user.screenname
+        user.profile = profile if profile is not None else user.profile
+        user.password = password if password is not None else user.password
+        user.email = email if email is not None else user.email
+        db.session.commit()
+        return user
+    
+    @staticmethod
+    def delete(uid):
+        """
+        Delete existing user
+        """
+        user = User.query.filter_by(uid = uid).one()
+        db.session.delete(user)
+        db.session.commit()
+        return user
 
 @dataclass
 class Post(db.Model):
@@ -83,6 +92,16 @@ class Post(db.Model):
         post = Post(None, user_id, None)
         db.session.add(post)
         db.session.commit()
+    
+    @staticmethod
+    def update(pid, user_id):
+        """
+        Update existing post
+        """
+        post = Post.query.filter_by(pid = pid).one()
+        post.user_id = user_id if user_id is not None else post.user_id
+        db.session.commit()
+        return post
 
     @staticmethod
     def delete(pid):
@@ -92,23 +111,6 @@ class Post(db.Model):
         post = Post.query.filter_by(pid = pid).one()
         db.session.delete(post)
         db.session.commit()
-
-# @dataclass 
-# class Canvas(db.Model):
-#     __tablename__ = "canvas"
-    
-#     cid = db.Column(db.Integer, primary_key=True)
-#     instructions = db.Column(db.String(500), nullable=False) 
-#     post_id = db.Column(db.Integer, db.ForeignKey('post.pid'))
-
-#     @staticmethod
-#     def create(content, user_id, canvas_pid):
-#         """
-#         Create new canvas
-#         """
-#         new_canvas = Canvas(instructions, post_id)
-#         db.session.add(new_canvas)
-#         db.session.commit()
 
 @dataclass
 class Blocking(db.Model):
