@@ -54,22 +54,13 @@ def login():
 def register():
     req = request.get_json()
     email = req['email']
-    username = req['password']
+    username = req['username']
     screenname = req['screenname']
-    password = req['password']
-
-    user = User.query.filter_by(email=email).first() # query to find if user exists by email
-    if user:
-        return {
-            'message':  'User already exists.'
-        }
+    profile = req.get('profile')
+    password = generate_password_hash(req['password'], method='sha256')
 
     # create new user with form data, password hashed so it isn't plain text
-    new_user = User(email=email, username=username, screenname=screenname, password = generate_password_hash(password, method='sha256'))
-    
-    #add new user to db
-    db.session.add(new_user)
-    db.session.commit()
+    new_user = User.create(username, screenname, profile, password, email)
 
     login_user(new_user)
     

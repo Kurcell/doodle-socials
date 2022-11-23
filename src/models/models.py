@@ -42,6 +42,7 @@ class User(db.Model, UserMixin):
         new_user = User(username, screenname, profile, password, email)
         db.session.add(new_user)
         db.session.commit()
+        return new_user
     
     @staticmethod
     def update(uid, username, screenname, profile, password, email):
