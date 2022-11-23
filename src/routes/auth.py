@@ -8,7 +8,7 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route("/", methods=['GET'])
 def hello():
-    return "Welcome to Just a Doodle's Social API!"
+    return "Welcome to Dudol's Social API!"
 
 @auth_bp.route("/hello", methods=['GET'])
 @login_required
