@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from ..models.models import Post
+from ..models.models import Post, User
 
 post_bp = Blueprint('posts', __name__)
 
@@ -9,7 +9,17 @@ def readOne(id):
 
 @post_bp.route("/posts", methods=['GET'])
 def readMany():
-    return jsonify(Post.query.all())
+    posts = [
+        {
+            'uid': i.uid,
+            'username': i.username,
+            'screenname': i.screenname,
+            'pid': i.pid,
+            'createdat': i.createdat
+        }
+        for i in Post.query.join(User, Post.user_id == User.uid).add_columns(User.uid, User.screenname, User.username, Post.pid, Post.createdat).all()
+    ]
+    return jsonify(posts)
 
 @post_bp.route("/post", methods=['POST'])
 def create():
