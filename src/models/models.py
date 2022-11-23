@@ -92,6 +92,16 @@ class Post(db.Model):
         post = Post(None, user_id, None)
         db.session.add(post)
         db.session.commit()
+    
+    @staticmethod
+    def update(pid, user_id):
+        """
+        Update existing post
+        """
+        post = Post.query.filter_by(pid = pid).one()
+        post.user_id = user_id if user_id is not None else post.user_id
+        db.session.commit()
+        return post
 
     @staticmethod
     def delete(pid):
@@ -101,23 +111,6 @@ class Post(db.Model):
         post = Post.query.filter_by(pid = pid).one()
         db.session.delete(post)
         db.session.commit()
-
-# @dataclass 
-# class Canvas(db.Model):
-#     __tablename__ = "canvas"
-    
-#     cid = db.Column(db.Integer, primary_key=True)
-#     instructions = db.Column(db.String(500), nullable=False) 
-#     post_id = db.Column(db.Integer, db.ForeignKey('post.pid'))
-
-#     @staticmethod
-#     def create(content, user_id, canvas_pid):
-#         """
-#         Create new canvas
-#         """
-#         new_canvas = Canvas(instructions, post_id)
-#         db.session.add(new_canvas)
-#         db.session.commit()
 
 @dataclass
 class Blocking(db.Model):

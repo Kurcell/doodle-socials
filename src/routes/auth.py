@@ -1,4 +1,4 @@
-from flask import Blueprint, request, session, jsonify
+from flask import Blueprint, request
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from ..models.models import User
@@ -52,7 +52,6 @@ def login():
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
-
     req = request.get_json()
     email = req['email']
     username = req['password']
@@ -62,7 +61,7 @@ def register():
     user = User.query.filter_by(email=email).first() # query to find if user exists by email
     if user:
         return {
-            'message':  'User already exists. Go to Login.'
+            'message':  'User already exists.'
         }
 
     # create new user with form data, password hashed so it isn't plain text
@@ -75,8 +74,8 @@ def register():
     login_user(new_user)
     
     return {
-            'message':  'Signed up as a new user!'
-    }
+            'id': new_user.uid
+    }, 201
 
 @auth_bp.route('/logout')
 @login_required
