@@ -133,6 +133,15 @@ class Blocking(db.Model):
         new_block = Blocking(blockee_uid, blocked_uid)
         db.session.add(new_block)
         db.session.commit()
+    
+    @staticmethod
+    def delete(blocking_id):
+        """
+        Delete blocking of a user
+        """
+        block = Blocking.query.filter_by(blocking_id= blocking_id).one()
+        db.session.delete(block)
+        db.session.commit()
 
 @dataclass
 class Following(db.Model):
@@ -153,6 +162,15 @@ class Following(db.Model):
         """
         new_follow = Following(followee_uid, followed_uid)
         db.session.add(new_follow)
+        db.session.commit()
+
+    @staticmethod
+    def delete(following_id):
+        """
+        Delete following of a user
+        """
+        follow = Following.query.filter_by(following_id = following_id).one()
+        db.session.delete(follow)
         db.session.commit()
 
 
