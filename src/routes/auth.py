@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from ..models.models import User
@@ -16,15 +16,13 @@ def helloUser():
     return "Hello, " + current_user.username
 
 @auth_bp.route("/verify", methods=['GET'])
+@login_required
 def verify():
-    if current_user.is_authenticated:
-        user = {
+    return jsonify(user = {
             'uid': current_user.uid,
             'username' : current_user.username,
             'screenname' : current_user.screenname
-            }
-        return { 'auth': True, 'user': user }
-    return { 'auth': False, 'user': None}
+            })
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
