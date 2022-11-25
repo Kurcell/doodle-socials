@@ -1,5 +1,5 @@
-from flask import Blueprint
-from ..models.models import Blocking
+from flask import Blueprint, jsonify, request
+from ..models.models import Blocking, User
 
 blocking_bp = Blueprint('blocking', __name__)
 
@@ -7,7 +7,7 @@ blocking_bp = Blueprint('blocking', __name__)
 def readAll():
     return "Blocking."
 
-@blocking_bp.route("/blocks", methods='[GET]')
+@blocking_bp.route("/blocks", methods=['GET'])
 def readMany():
     blocks = [
         {

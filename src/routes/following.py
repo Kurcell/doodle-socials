@@ -1,5 +1,5 @@
-from flask import Blueprint
-from ..models.models import Following
+from flask import Blueprint, jsonify, request
+from ..models.models import Following, User
 
 following_bp = Blueprint('following', __name__)
 
@@ -7,7 +7,7 @@ following_bp = Blueprint('following', __name__)
 def readAll():
     return "Following."
 
-@following_bp.route("/follows", methods='[GET]')
+@following_bp.route("/follows", methods=['GET'])
 def readMany():
     follows = [
         {
