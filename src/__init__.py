@@ -12,7 +12,7 @@ db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__, instance_relative_config=False)
-    CORS(app, origins="http://127.0.0.1:8080", allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"], supports_credentials=True)
+    CORS(app)
 
     SWAGGER_URL = '/swagger'
     API_URL = '/static/swagger.json'
