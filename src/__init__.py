@@ -1,38 +1,18 @@
-from functools import wraps
-import os, jwt
+import os
 from flask import Flask, current_app, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS
-# from flask_login import LoginManager
-
+from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
+
+
 load_dotenv()
-
-def token_required(func):
-    # decorator factory which invoks update_wrapper() method and passes decorated function as an argument
-        @wraps(func)
-        def decorated(*args, **kwargs):
-            token = request.args.get('token')
-            if not token:
-                return jsonify({'Alert!': 'Token is missing!'}), 401
-
-            try:
-                data = jwt.decode(token, app.config['SECRET_KEY'])
-            # You can use the JWT errors in exception
-            # except jwt.InvalidTokenError:
-            #     return 'Invalid token. Please log in again.'
-            except:
-                return jsonify({'Message': 'Invalid token'}), 403
-            return func(*args, **kwargs)
-        return decorated
 
 # Database setup
 db = SQLAlchemy()
 
 def create_app():
-    from . import models, routes
-
     app = Flask(__name__, instance_relative_config=False)
     CORS(app, supports_credentials=True)
 
@@ -47,6 +27,10 @@ def create_app():
     )
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
     
+    app.config['JWT_SECRET_KEY'] = os.getenv('DATABASE_URL')
+    app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+    app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+    app.config['JWT_CSRF_CHECK_FORM'] = True
     app.config['SECRET_KEY'] = os.getenv('DATABASE_URL')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL').replace("postgres://", "postgresql://", 1)
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -54,16 +38,27 @@ def create_app():
     app_ctx.push()
     current_app.config["ENV"]
 
-    # login_manager = LoginManager()
-    # login_manager.init_app(app)
-
+    from . import models, routes
     models.init_app(app)
     routes.init_app(app)
 
-    # from .models.models import User
-    # @login_manager.user_loader
-    # def load_user(user_id):
-    #     return User.query.get(int(user_id))  
+    jwt = JWTManager(app) 
+
+    # Register a callback function that takes whatever object is passed in as the
+    # identity when creating JWTs and converts it to a JSON serializable format.
+    @jwt.user_identity_loader
+    def user_identity_lookup(user):
+        return user.uid
+
+    # Register a callback function that loads a user from your database whenever
+    # a protected route is accessed. This should return any python object on a
+    # successful lookup, or None if the lookup failed for any reason (for example
+    # if the user has been deleted from the database).
+    from .models.models import User
+    @jwt.user_lookup_loader
+    def user_lookup_callback(_jwt_header, jwt_data):
+        identity = jwt_data["sub"]
+        return User.query.filter_by(uid=identity).first()
 
     # with app.app_context():
     #     from src.models.models import User, Post, Blocking, Following
