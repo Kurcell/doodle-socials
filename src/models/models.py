@@ -1,11 +1,10 @@
 from .. import db
 from dataclasses import dataclass
 from datetime import datetime
-from flask_login import UserMixin
 import string
 
 @dataclass
-class User(db.Model, UserMixin):
+class User(db.Model):
     __tablename__ = "users"
     uid: int 
     username: string
@@ -30,9 +29,6 @@ class User(db.Model, UserMixin):
         self.profile = profile
         self.password = password
         self.email = email
-    
-    def get_id(self):
-        return self.uid
 
     @staticmethod
     def create(username, screenname, profile, password, email):
