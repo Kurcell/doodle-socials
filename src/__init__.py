@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Database setup
 db = SQLAlchemy()
 
 def create_app():
@@ -43,24 +42,14 @@ def create_app():
 
     jwt = JWTManager(app) 
 
-    # Register a callback function that takes whatever object is passed in as the
-    # identity when creating JWTs and converts it to a JSON serializable format.
     @jwt.user_identity_loader
     def user_identity_lookup(user):
         return user.uid
 
-    # Register a callback function that loads a user from your database whenever
-    # a protected route is accessed. This should return any python object on a
-    # successful lookup, or None if the lookup failed for any reason (for example
-    # if the user has been deleted from the database).
     from .models.models import User
     @jwt.user_lookup_loader
     def user_lookup_callback(_jwt_header, jwt_data):
         identity = jwt_data["sub"]
         return User.query.filter_by(uid=identity).first()
-
-    # with app.app_context():
-    #     from src.models.models import User, Post, Blocking, Following
-    #     db.create_all()
 
     return app
