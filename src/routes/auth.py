@@ -58,11 +58,10 @@ def register():
 
     access_token = create_access_token(identity=user)
     refresh_token = create_refresh_token(identity=user)
-    resp = jsonify({'login': True})
+    resp = jsonify({'register': True})
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
-
-    return jsonify({'register': True}), 201
+    return resp, 201
 
 @auth_bp.route('/logout')
 def logout():
