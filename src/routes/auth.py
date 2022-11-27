@@ -20,10 +20,13 @@ def helloUser():
 @auth_bp.route("/verify", methods=['GET'])
 @jwt_required()
 def verify():
-    return jsonify({
-        'uid': current_user.uid,
-        'username': current_user.username, 
-        'screenname': current_user.screenname
+    return jsonify({ 
+        'user': 
+        {
+            'uid': current_user.uid,
+            'username': current_user.username, 
+            'screenname': current_user.screenname
+        }   
      })
 
 @auth_bp.route('/login', methods=['POST'])
