@@ -22,6 +22,7 @@ class User(db.Model):
     email = db.Column(db.String(200),unique=True, nullable=False)
     createdat = db.Column(db.DateTime(200), nullable=False, default=datetime.utcnow)
     users_post = db.relationship('Post', backref='user')
+    users_like = db.relationship('Like', backref='like')
 
     def __init__(self, username, screenname, profile, password, email):
         self.username = username
@@ -71,15 +72,18 @@ class Post(db.Model):
     pid: int
     user_id: int
     createdat: datetime
+    likes: int
     
     pid = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.uid'))
     createdat = db.Column(db.DateTime, default=datetime.utcnow)
+    likes = db.Column(db.Integer, default=0)
 
     def __init__(self, pid, user_id, createdat):
         self.pid = pid
         self.user_id = user_id
         self.createdat = createdat
+        self.likes = likes
 
     @staticmethod
     def create(user_id):
@@ -170,3 +174,32 @@ class Following(db.Model):
         db.session.commit()
 
 
+@dataclass
+class Likes(db.Model):
+    __tablename__ = "likes"
+
+    like_id: int
+    liking_user: int
+    liked_post: int
+
+    like_id = db.Column(db.Integer, primary_key=True)
+    liking_user = db.Column(db.Integer, db.ForeignKey('users.uid'))
+    liked_post = db.Column(db.Integer, db.ForeignKey('post.pid'))
+
+    @staticmethod
+    def create(liking_user, liked_post):
+        """
+        Create new instance of a user liking a post
+        """
+        new_follow = Following(followee_uid, followed_uid)
+        db.session.add(new_follow)
+        db.session.commit()
+
+    @staticmethod
+    def delete(like_id):
+        """
+        Delete user liking a post
+        """
+        follow = Following.query.filter_by(following_id = following_id).one()
+        db.session.delete(follow)
+        db.session.commit()
