@@ -22,7 +22,6 @@ class User(db.Model):
     email = db.Column(db.String(200),unique=True, nullable=False)
     createdat = db.Column(db.DateTime(200), nullable=False, default=datetime.utcnow)
     users_post = db.relationship('Post', backref='user')
-    users_like = db.relationship('Like', backref='like')
 
     def __init__(self, username, screenname, profile, password, email):
         self.username = username
@@ -78,6 +77,8 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.uid'))
     createdat = db.Column(db.DateTime, default=datetime.utcnow)
     likes = db.Column(db.Integer, default=0)
+    users_like = db.relationship('Likes', backref='likes')
+
 
     def __init__(self, pid, user_id, createdat):
         self.pid = pid
