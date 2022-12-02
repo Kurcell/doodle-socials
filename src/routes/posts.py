@@ -36,8 +36,8 @@ def update(id):
 def delete(id):
     return jsonify(Post.delete(id))
 
-@post_bp.route("post/<int:uid>/like/<int:id>", methods=['PUT'])
-def update(uid, id):
+@post_bp.route("/post/<int:uid>/like/<int:id>", methods=['PUT'])
+def like(uid, id):
     req = request.get_json()
     user = User.query.filter_by(uid = id).one()
     exists = db.session.query(user.uid).filter_by(username=user.username).scalar()
