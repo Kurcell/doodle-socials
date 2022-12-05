@@ -20,6 +20,7 @@ def update(uid, id):
     if exists is None:
         post = Post.query.filter_by(id = id).one()
         new_like = Like(user.uid, post.pid)
+        post.likes += 1
         db.session.add(new_like)
         db.session.commit()
         return f"Added a like! The post now has {post.likes}!"
@@ -27,4 +28,5 @@ def update(uid, id):
         post = Post.query.filter_by(id = id).one()
         db.session.delete(post)
         db.session.commit()
+        post.likes -= 1
         return f"Removed your like! The post now has {post.likes}!"
