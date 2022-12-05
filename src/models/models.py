@@ -192,8 +192,8 @@ class Likes(db.Model):
         """
         Create new instance of a user liking a post
         """
-        new_follow = Following(followee_uid, followed_uid)
-        db.session.add(new_follow)
+        new_like= Likes(liking_user, liked_post)
+        db.session.add(new_like)
         db.session.commit()
 
     @staticmethod
@@ -201,6 +201,6 @@ class Likes(db.Model):
         """
         Delete user liking a post
         """
-        follow = Following.query.filter_by(following_id = following_id).one()
-        db.session.delete(follow)
+        like = Likes.query.filter_by(like_id = like_id).one()
+        db.session.delete(like)
         db.session.commit()
