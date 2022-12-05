@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 from flask_jwt_extended import (jwt_required, get_jwt_identity,
                                 create_access_token, create_refresh_token, 
                                 set_access_cookies, set_refresh_cookies, 
@@ -52,7 +52,7 @@ def register():
     username = req['username']
     screenname = req['screenname']
     profile = req.get('profile')
-    password = generate_password_hash(req['password'], method='sha256')
+    password = req['password']
 
     user = User.create(username, screenname, profile, password, email)
 
