@@ -50,36 +50,50 @@ class Post(db.Model):
     __tablename__ = "post"
 
     pid: int
-    content: string
     user_id: int
-    canvas_pid: string
+    createdat: datetime
+    likes: int
     
     pid = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.String(500), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.uid'))
-    canvas_pid = db.relationship('Canvas', backref='post')
+    createdat = db.Column(db.DateTime, default=datetime.utcnow)
+    likes = db.Column(db.Integer, default=0)
+    users_like = db.relationship('Likes', backref='likes')
 
-    def __init__(self, pid, user_id, content):
+
+    def __init__(self, pid, user_id, createdat):
         self.pid = pid
-        self.uid = user_id
-        self.content = content
+        self.user_id = user_id
+        self.createdat = createdat
+        self.likes = likes
 
-@dataclass
-class Canvas(db.Model):
-    __tablename__ = "canvas"
-
-    cid: int
-    instructions: string
-    post_id: int
+    @staticmethod
+    def create(user_id):
+        """
+        Create new post
+        """
+        post = Post(None, user_id, None)
+        db.session.add(post)
+        db.session.commit()
     
-    cid = db.Column(db.Integer, primary_key=True)
-    instructions = db.Column(db.String(500), nullable=False) 
-    post_id = db.Column(db.Integer, db.ForeignKey('post.pid'))
+    @staticmethod
+    def update(pid, user_id):
+        """
+        Update existing post
+        """
+        post = Post.query.filter_by(pid = pid).one()
+        post.user_id = user_id if user_id is not None else post.user_id
+        db.session.commit()
+        return post
 
-    def __init__(self, cid, post_id, instructions):
-        self.cid = cid
-        self.post_id = post_id
-        self.instructions = instructions
+    @staticmethod
+    def delete(pid):
+        """
+        Delete existing post
+        """
+        post = Post.query.filter_by(pid = pid).one()
+        db.session.delete(post)
+        db.session.commit()
 
 @dataclass
 class Blocking(db.Model):
