@@ -77,7 +77,6 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.uid'))
     createdat = db.Column(db.DateTime, default=datetime.utcnow)
     likes = db.Column(db.Integer, default=0)
-    users_like = db.relationship('Likes', backref='likes')
 
 
     def __init__(self, pid, user_id, createdat):
@@ -91,7 +90,7 @@ class Post(db.Model):
         """
         Create new post
         """
-        post = Post(None, user_id, None)
+        post = Post(None, user_id, None, 0)
         db.session.add(post)
         db.session.commit()
     
@@ -126,6 +125,12 @@ class Blocking(db.Model):
     blockee_uid = db.Column(db.Integer, nullable=False)
     blocked_uid = db.Column(db.Integer, nullable=False)
 
+    def __init__(self, blocking_id, blockee_uid, blocked_uid):
+        self.blocking_id = blocking_id
+        self.blockee_uid = blockee_uid
+        self.blocked_uid = blocked_uid
+
+
     @staticmethod
     def create(blockee_uid, blocked_uid):
         """
@@ -156,6 +161,11 @@ class Following(db.Model):
     followee_uid = db.Column(db.Integer, nullable= False)
     followed_uid = db.Column(db.Integer, nullable= False)
 
+    def __init__(self, following_id, followee_uid, followed_uid):
+        self.following_id = following_id
+        self.followee_uid = followee_uid
+        self.followed_uid = followed_uid
+
     @staticmethod
     def create(followee_uid, followed_uid):
         """
@@ -184,15 +194,21 @@ class Likes(db.Model):
     liked_post: int
 
     like_id = db.Column(db.Integer, primary_key=True)
-    liking_user = db.Column(db.Integer, db.ForeignKey('users.uid'))
-    liked_post = db.Column(db.Integer, db.ForeignKey('post.pid'))
+    liking_user = db.Column(db.Integer, nullable=False)
+    liked_post = db.Column(db.Integer, nullable=False)
+
+    def __init__(self, like_id, liking_user, liked_post):
+        self.like_id = like_id
+        self.liking_user = liking_user
+        self.liked_post = liked_post
+
 
     @staticmethod
     def create(liking_user, liked_post):
         """
         Create new instance of a user liking a post
         """
-        new_like= Likes(liking_user, liked_post)
+        new_like= Likes(None, liking_user, liked_post)
         db.session.add(new_like)
         db.session.commit()
 

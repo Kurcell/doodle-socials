@@ -12,21 +12,28 @@ def readOne(id):
 def readMany():
     return jsonify(Likes.query.all())
 
-@likes_bp.route("/like/<int:uid>/<int:id>", methods=['PUT'])
-def update(uid, id):
-    req = request.get_json()
-    user = User.query.filter_by(uid = id).one()
-    exists = db.session.query.filter_by(user.uid = id).scalar()
-    if exists is None:
-        post = Post.query.filter_by(id = id).one()
-        new_like = Like(user.uid, post.pid)
-        post.likes += 1
-        db.session.add(new_like)
-        db.session.commit()
-        return f"Added a like! The post now has {post.likes}!"
-    else:
-        post = Post.query.filter_by(id = id).one()
-        db.session.delete(post)
-        db.session.commit()
-        post.likes -= 1
-        return f"Removed your like! The post now has {post.likes}!"
+# @likes_bp.route("/like/<int:id>", methods=['PUT'])
+# def update(id):
+#     req = request.get_json()
+#     uid = req.get('user_id')
+#     pid = req.get('pid')
+#     # user = User.query.filter_by(uid = id).one()
+#     exists = Likes.query.filter_by(like_id = id).one()
+#     # print(req.get('user_id'))
+#     # print(isinstance(req.get('user_id'), str))
+#     # print(req.get('pid'))
+#     # print(exists)
+#     # print(exists.liked_post)
+#     if exists is None:
+#         print("doesnt exist") 
+#         post = Post.query.filter_by(pid = pid).one()
+#         post.likes += 1
+#         return jsonify(Likes.create(req.get('user_id'), req.get('pid')))
+#     else:
+#         print("exists") 
+#         print(exists)
+#         post = Post.query.filter_by(pid = exists.liked_post).one()
+#         post.likes -= 1
+#         if posts.like < 0:
+#             post.likes = 0
+#         return jsonify(Likes.delete(id))
