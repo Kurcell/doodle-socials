@@ -79,7 +79,7 @@ class Post(db.Model):
     likes = db.Column(db.Integer, default=0)
 
 
-    def __init__(self, pid, user_id, createdat):
+    def __init__(self, pid, user_id, createdat, likes):
         self.pid = pid
         self.user_id = user_id
         self.createdat = createdat
