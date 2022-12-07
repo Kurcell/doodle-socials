@@ -16,21 +16,23 @@ def readMany():
             'username': i.username,
             'screenname': i.screenname,
             'pid': i.pid,
+            'doodle_id': i.doodle_id,
+            'likes': i.likes,
             'createdat': i.createdat
         }
-        for i in Post.query.join(User, Post.user_id == User.uid).add_columns(User.uid, User.screenname, User.username, Post.pid, Post.createdat).all()
+        for i in Post.query.join(User, Post.user_id == User.uid).add_columns(User.uid, User.screenname, User.username, Post.pid, Post.doodle_id, Post.likes, Post.createdat).all()
     ]
     return jsonify(posts)
 
 @post_bp.route("/post", methods=['POST'])
 def create():
     req = request.get_json()
-    return jsonify(Post.create(req.get('user_id')))
+    return jsonify(Post.create(req.get('user_id'), req.get('doodle_id')))
 
 @post_bp.route("/post/<int:id>", methods=['PUT'])
 def update(id):
     req = request.get_json()
-    return jsonify(Post.update(id, req.get('user_id')))
+    return jsonify(Post.update(id, req.get('user_id'), req.get('doodle_id')))
 
 @post_bp.route("/post/<int:id>", methods=['DELETE'])
 def delete(id):

@@ -576,8 +576,16 @@
             "format": "integer"
           },
           "user_id": {
-            "type": "string",
-            "format": "string"
+            "type": "integer",
+            "format": "integer"
+          },
+          "doodle_id": {
+            "type": "integer",
+            "format": "integer"
+          },
+          "likes": {
+            "type": "integer",
+            "format": "integer"
           },
           "createdat": {
             "type": "string",
@@ -589,8 +597,12 @@
         "type": "object",
         "properties": {
           "user_id": {
-            "type": "string",
-            "format": "string"
+            "type": "integer",
+            "format": "integer"
+          },
+          "doodle_id": {
+            "type": "integer",
+            "format": "integer"
           }
         }
       }

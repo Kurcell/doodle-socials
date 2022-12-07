@@ -70,37 +70,42 @@ class Post(db.Model):
 
     pid: int
     user_id: int
+    doodle_id: int
     createdat: datetime
     likes: int
     
     pid = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.uid'))
+    doodle_id = db.Column(db.Integer)
     createdat = db.Column(db.DateTime, default=datetime.utcnow)
     likes = db.Column(db.Integer, default=0)
 
 
-    def __init__(self, pid, user_id, createdat, likes):
+    def __init__(self, pid, user_id, doodle_id, createdat, likes):
         self.pid = pid
         self.user_id = user_id
+        self.doodle_id = doodle_id
         self.createdat = createdat
         self.likes = likes
 
     @staticmethod
-    def create(user_id):
+    def create(user_id, doodle_id):
         """
         Create new post
         """
-        post = Post(None, user_id, None, 0)
+        post = Post(None, user_id, doodle_id, None, 0)
         db.session.add(post)
         db.session.commit()
+        return post
     
     @staticmethod
-    def update(pid, user_id):
+    def update(pid, user_id,doodle_id,):
         """
         Update existing post
         """
         post = Post.query.filter_by(pid = pid).one()
         post.user_id = user_id if user_id is not None else post.user_id
+        post.doodle_id = doodle_id if doodle_id is not None else post.doodle_id
         db.session.commit()
         return post
 
@@ -112,6 +117,7 @@ class Post(db.Model):
         post = Post.query.filter_by(pid = pid).one()
         db.session.delete(post)
         db.session.commit()
+        return post
 
 @dataclass
 class Blocking(db.Model):
@@ -136,9 +142,10 @@ class Blocking(db.Model):
         """
         Create new instance of a user blocking another user
         """
-        new_block = Blocking(blockee_uid, blocked_uid)
-        db.session.add(new_block)
+        block = Blocking(blockee_uid, blocked_uid)
+        db.session.add(block)
         db.session.commit()
+        return block
     
     @staticmethod
     def delete(blocking_id):
@@ -148,6 +155,7 @@ class Blocking(db.Model):
         block = Blocking.query.filter_by(blocking_id= blocking_id).one()
         db.session.delete(block)
         db.session.commit()
+        return block
 
 @dataclass
 class Following(db.Model):
@@ -171,9 +179,10 @@ class Following(db.Model):
         """
         Create new instance of a user following another user
         """
-        new_follow = Following(followee_uid, followed_uid)
-        db.session.add(new_follow)
+        follow = Following(followee_uid, followed_uid)
+        db.session.add(follow)
         db.session.commit()
+        return follow
 
     @staticmethod
     def delete(following_id):
@@ -183,6 +192,7 @@ class Following(db.Model):
         follow = Following.query.filter_by(following_id = following_id).one()
         db.session.delete(follow)
         db.session.commit()
+        return follow
 
 
 @dataclass
@@ -208,9 +218,10 @@ class Likes(db.Model):
         """
         Create new instance of a user liking a post
         """
-        new_like= Likes(None, liking_user, liked_post)
-        db.session.add(new_like)
+        like= Likes(None, liking_user, liked_post)
+        db.session.add(like)
         db.session.commit()
+        return like
 
     @staticmethod
     def delete(like_id):
@@ -220,3 +231,4 @@ class Likes(db.Model):
         like = Likes.query.filter_by(like_id = like_id).one()
         db.session.delete(like)
         db.session.commit()
+        return like
