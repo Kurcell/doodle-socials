@@ -62,6 +62,22 @@ def update_like(id):
         # print("removed like")
         return jsonify(Likes.delete(exists.like_id))
 
+@post_bp.route("/post/feed/<int:p>", methods=['GET'])
+def discover(p):
+    posts = [
+        {
+            'uid': i.uid,
+            'username': i.username,
+            'screenname': i.screenname,
+            'pid': i.pid,
+            'doodle_id': i.doodle_id,
+            'likes': i.likes,
+            'createdat': i.createdat
+        }
+        for i in Post.query.join(User, Post.user_id == User.uid).add_columns(User.uid, User.screenname, User.username, Post.pid, Post.doodle_id, Post.likes, Post.createdat).order_by(Post.likes.desc()).offset(p).limit(3).all()
+    ]
+    return jsonify(posts)
+
 
 
 
