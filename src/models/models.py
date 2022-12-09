@@ -35,10 +35,10 @@ class User(db.Model):
         """
         Create new user
         """
-        new_user = User(username, screenname, profile, password, email)
-        db.session.add(new_user)
+        user = User(username, screenname, profile, password, email)
+        db.session.add(user)
         db.session.commit()
-        return new_user
+        return user
     
     @staticmethod
     def update(uid, username, screenname, profile, password, email):

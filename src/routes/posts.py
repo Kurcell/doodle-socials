@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from ..models.models import Post, User, Likes
+from ..models.models import Post, User, Likes, Following
 from .. import db
 
 post_bp = Blueprint('posts', __name__)
@@ -38,32 +38,27 @@ def update(id):
 def delete(id):
     return jsonify(Post.delete(id))
 
-@post_bp.route("/post/like/<int:id>", methods=['PUT'])
-def update_like(id):
+@post_bp.route("/post/like", methods=['PUT'])
+def update_like():
     req = request.get_json()
-    uid = req.get('user_id')
+    uid = req.get('uid')
     pid = req.get('pid')
-    like_id = req.get('like_id')
-    exists = Likes.query.filter_by(like_id = like_id).first() # first instead of one so it can be None, otherwise program fails
+    exists = Likes.query.filter_by(liking_user = uid, liked_post = pid).first()
     if exists is None:
-        print("doesnt exist") 
-        post = Post.query.filter_by(pid = id).one()
-        # print("found post, creating like")
+        post = Post.query.filter_by(pid = pid).one()
         post.likes += 1
-        return jsonify(Likes.create(req.get('user_id'), req.get('pid')))
+        return jsonify(Likes.create(uid, pid))
     else:
-        print("exists") 
-        print(exists)
-        post = Post.query.filter_by(pid = id).one()
-        # print("found post, removing like")
+        post = Post.query.filter_by(pid = pid).one()
         post.likes -= 1
         if post.likes < 0:
             post.likes = 0
-        # print("removed like")
         return jsonify(Likes.delete(exists.like_id))
 
-@post_bp.route("/post/feed/<int:p>", methods=['GET'])
-def discover(p):
+@post_bp.route("/posts/discover", methods=['GET'])
+def discover():
+    uid = request.args.get('uid')
+    page = request.args.get('page')
     posts = [
         {
             'uid': i.uid,
@@ -74,7 +69,25 @@ def discover(p):
             'likes': i.likes,
             'createdat': i.createdat
         }
-        for i in Post.query.join(User, Post.user_id == User.uid).add_columns(User.uid, User.screenname, User.username, Post.pid, Post.doodle_id, Post.likes, Post.createdat).order_by(Post.likes.desc()).offset(p).limit(3).all()
+        for i in Post.query.join(User, Post.user_id == User.uid).add_columns(User.uid, User.screenname, User.username, Post.pid, Post.doodle_id, Post.likes, Post.createdat).order_by(Post.likes.desc()).offset(page or 0).limit(1).all()
+    ]
+    return jsonify(posts)
+
+@post_bp.route("/posts/following", methods=['GET'])
+def following():
+    uid = request.args.get('uid')
+    page = request.args.get('page')
+    posts = [
+        {
+            'uid': i.uid,
+            'username': i.username,
+            'screenname': i.screenname,
+            'pid': i.pid,
+            'doodle_id': i.doodle_id,
+            'likes': i.likes,
+            'createdat': i.createdat
+        }
+        for i in Post.query.join(User, Post.user_id == User.uid).add_columns(User.uid, User.screenname, User.username, Post.pid, Post.doodle_id, Post.likes, Post.createdat).order_by(Post.likes.desc()).offset(page or 0).limit(1).all()
     ]
     return jsonify(posts)
 
