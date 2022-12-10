@@ -1,7 +1,8 @@
+import string
 from .. import db
 from dataclasses import dataclass
 from datetime import datetime
-import string
+from werkzeug.security import generate_password_hash
 
 @dataclass
 class User(db.Model):
@@ -27,13 +28,13 @@ class User(db.Model):
         self.username = username
         self.screenname = screenname
         self.profile = profile
-        self.password = password
+        self.password = generate_password_hash(password, method='sha256')
         self.email = email
 
     @staticmethod
     def create(username, screenname, profile, password, email):
         """
-        Create new user
+        Creates a new user and adds them to database
         """
         user = User(username, screenname, profile, password, email)
         db.session.add(user)
@@ -43,7 +44,7 @@ class User(db.Model):
     @staticmethod
     def update(uid, username, screenname, profile, password, email):
         """
-        Update existing user
+        Updates existing user and adds the changes to the database
         """
         user = User.query.filter_by(uid = uid).one()
         user.username = username if username is not None else user.username
@@ -57,7 +58,7 @@ class User(db.Model):
     @staticmethod
     def delete(uid):
         """
-        Delete existing user
+        Delete existing user from database
         """
         user = User.query.filter_by(uid = uid).one()
         db.session.delete(user)
@@ -218,7 +219,7 @@ class Likes(db.Model):
         """
         Create new instance of a user liking a post
         """
-        like= Likes(None, liking_user, liked_post)
+        like = Likes(None, liking_user, liked_post)
         db.session.add(like)
         db.session.commit()
         return like
