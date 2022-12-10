@@ -347,12 +347,121 @@
         }
       }
     },
+    "/post/like": {
+      "put": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Updates like status betweena user and a post",
+        "requestBody": {
+          "description": "Post Like Request Body.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/postLikeBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/like"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/posts": {
       "get": {
         "tags": [
           "Posts"
         ],
         "summary": "Reads all posts from database.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/post"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/discover": {
+      "parameters": [
+        {
+          "name": "uid",
+          "in": "query",
+          "required": false,
+          "description": "ID of the user making request.",
+          "type": "string"
+        },
+        {
+          "name": "page",
+          "in": "query",
+          "required": false,
+          "description": "Page number for pagination purposes",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Reads all posts from database from users that a given user isn't following.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/post"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/posts/following": {
+      "parameters": [
+        {
+          "name": "uid",
+          "in": "query",
+          "required": false,
+          "description": "ID of the user making request.",
+          "type": "string"
+        },
+        {
+          "name": "page",
+          "in": "query",
+          "required": false,
+          "description": "Page number for pagination purposes",
+          "type": "string"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Reads all posts from database from users that a given user is following.",
         "responses": {
           "200": {
             "description": "OK",
@@ -568,6 +677,23 @@
           }
         }
       },
+      "like": {
+        "type": "object",
+        "properties": {
+          "like_id": {
+            "type": "integer",
+            "format": "integer"
+          },
+          "liking_user": {
+            "type": "integer",
+            "format": "integer"
+          },
+          "liked_post": {
+            "type": "integer",
+            "format": "integer"
+          }
+        }
+      },
       "post": {
         "type": "object",
         "properties": {
@@ -576,8 +702,16 @@
             "format": "integer"
           },
           "user_id": {
-            "type": "string",
-            "format": "string"
+            "type": "integer",
+            "format": "integer"
+          },
+          "doodle_id": {
+            "type": "integer",
+            "format": "integer"
+          },
+          "likes": {
+            "type": "integer",
+            "format": "integer"
           },
           "createdat": {
             "type": "string",
@@ -589,8 +723,25 @@
         "type": "object",
         "properties": {
           "user_id": {
-            "type": "string",
-            "format": "string"
+            "type": "integer",
+            "format": "integer"
+          },
+          "doodle_id": {
+            "type": "integer",
+            "format": "integer"
+          }
+        }
+      },
+      "postLikeBody": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "integer",
+            "format": "integer"
+          },
+          "pid": {
+            "type": "integer",
+            "format": "integer"
           }
         }
       }

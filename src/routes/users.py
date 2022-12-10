@@ -5,7 +5,7 @@ user_bp = Blueprint('users', __name__)
 
 @user_bp.route("/user/<int:id>", methods=['GET'])
 def readOne(id):
-    return jsonify(User.query.filter_by(id = id).one())
+    return jsonify(User.query.filter_by(uid = id).one())
 
 @user_bp.route("/users", methods=['GET'])
 def readMany():
@@ -14,7 +14,7 @@ def readMany():
 @user_bp.route("/user", methods=['POST'])
 def create():
     req = request.get_json()
-    return jsonify(User.create(req.get('username'), req.get('screenname'), req.get('profile'), req.get('password'), req.get('email')))
+    return jsonify(User.create(req.get('username'), req.get('screenname'), req.get('profile'), req.get('password'), req.get('email'))), 201
 
 @user_bp.route("/user/<int:id>", methods=['PUT'])
 def update(id):
