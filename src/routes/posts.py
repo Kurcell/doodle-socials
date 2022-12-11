@@ -57,7 +57,7 @@ def update_like():
 
 @post_bp.route("/post/like/check/<int:uid>/<int:id>", methods=['GET'])
 def check_if_liked(uid, id):
-    return jsonify(Likes.query.filter_by(liking_user = uid, liked_post = id).first())
+    return jsonify(Likes.query.filter_by(liking_user = uid, liked_post = id).first().like_id)
 
 
 @post_bp.route("/posts/discover", methods=['GET'])
