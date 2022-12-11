@@ -200,7 +200,7 @@
       }
     },
     "/user/follow": {
-      "put": {
+      "get": {
         "parameters": [
           {
             "name": "uid",
@@ -387,7 +387,7 @@
       }
     },
     "/post/like": {
-      "put": {
+      "get": {
         "parameters": [
           {
             "name": "pid",
