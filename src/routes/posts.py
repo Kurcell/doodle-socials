@@ -56,6 +56,11 @@ def post_like():
             post.likes = 0
         return jsonify(Likes.delete(exists.like_id)), 200
 
+@post_bp.route("/post/like/check/<int:uid>/<int:id>", methods=['GET'])
+def check_if_liked(uid, id):
+    like = Likes.query.filter_by(liking_user = uid, liked_post = id).first()
+    return "False" if like None else "True"
+
 @post_bp.route("/posts/discover", methods=['GET'])
 @jwt_required()
 def post_discover():
