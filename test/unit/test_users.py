@@ -1,77 +1,39 @@
-import json
-
-def test_user_readMany(client):
-    """
-    GIVEN a test client
-    WHEN the readMany route for users is called
-    THEN assure that valid requests return valid responses
-    """
-
-    response = client.get('/users')
-    users = json.loads(response.data)
-
-    assert len(users) == 4
-    assert response.status == '200 OK'
-
-def test_user_readOne(client):
-    """
-    GIVEN a test client
-    WHEN the readOne route for users is called
-    THEN check that valid requests return valid responses
-    """
-    response = client.get('/user/2')
-    user = json.loads(response.data)
-    
-    assert user.get('username') == 'alealejandro'
-    assert response.status == '200 OK'
+from src.models.models import User
+from werkzeug.security import check_password_hash
 
 def test_user_create(client):
     """
-    GIVEN a test client
-    WHEN the create route for users in called
-    THEN check that valid requests return valid reponses
+    GIVEN a user data model
+    WHEN a user's create function is called
+    THEN check that the function leads to the creation of a user if the request is proper
     """
 
-    request_data = {
-        'username': 'boingo',
-        'screenname': 'oingo',
-        'email': 'oingo@boingo.com',
-        'password': 'besberr',
-        'profile': 'https://static.wikia.nocookie.net/jjba/images/a/a0/Oingo_Boingo_Brothers_Adventure.jpg/revision/latest?cb=20180820171318'
-    }
+    user = User.create('ferdinand', 'franz', 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Franz_ferdinand.jpg/1200px-Franz_ferdinand.jpg', 'justoneguy', 'austria@hungary.com')
 
-    response = client.post('/user', json=request_data)
-    user = json.loads(response.data)
-    
-    assert user.get('username') == 'boingo'
-    assert response.status == '201 CREATED'
+    assert user.screenname == 'franz'
+    assert check_password_hash(user.password, 'justoneguy')
+
 
 def test_user_update(client):
     """
-    GIVEN a test client
-    WHEN the update route for users in called
-    THEN check that valid requests return valid reponses
+    GIVEN a user data model
+    WHEN a user's update function is called
+    THEN check that the function leads to the modification of a user if the request is proper
     """
-    request_data = {
-        'screenname': 'Gnomeo'
-    }
 
-    response = client.put('/user/4', json=request_data)
-    user = json.loads(response.data)
+    user = User.update(6, None, "oops", None, None, None)
+
+    assert user.screenname == 'oops'
+    assert user.username == 'ferdinand'
     
-    assert user.get('screenname') == 'Gnomeo'
-    assert user.get('username') == 'rocketman'
-    assert response.status == '200 OK'
 
 def test_user_delete(client):
     """
-    GIVEN a test client
-    WHEN the update route for users in called
-    THEN check that valid requests return valid reponses
+    GIVEN a user data model
+    WHEN a user's delete function is called
+    THEN check that the function leads to the deletion of a user if the request is proper
     """
 
-    response = client.delete('/user/3')
-    user = json.loads(response.data)
-    
-    assert user.get('username') == 'toxic'
-    assert response.status == '200 OK'
+    user = User.delete(6)
+
+    assert user.uid == 6

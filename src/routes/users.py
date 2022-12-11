@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
-from ..models.models import User
+from ..models.models import User, Follows
+from flask_jwt_extended import (jwt_required, current_user)
 
 user_bp = Blueprint('users', __name__)
 
@@ -10,6 +11,17 @@ def readOne(id):
 @user_bp.route("/users", methods=['GET'])
 def readMany():
     return jsonify(User.query.all())
+
+@user_bp.route("/user/follow", methods=['GET'])
+@jwt_required()
+def follow():
+    follower_id = current_user.uid
+    followee_id = request.args.get('uid')
+    exists = Follows.query.filter_by(follower_id = follower_id, followee_id = followee_id).first()
+    if exists is None:
+        return jsonify(Follows.create(follower_id, followee_id)), 201
+    else:
+        return jsonify(Follows.delete(exists.follow_id)), 200
 
 @user_bp.route("/user", methods=['POST'])
 def create():
