@@ -82,25 +82,23 @@ class Post(db.Model):
     likes = db.Column(db.Integer, default=0)
 
 
-    def __init__(self, pid, user_id, doodle_id, createdat, likes):
-        self.pid = pid
+    def __init__(self, user_id, doodle_id):
         self.user_id = user_id
         self.doodle_id = doodle_id
-        self.createdat = createdat
-        self.likes = likes
+        self.likes = 0
 
     @staticmethod
     def create(user_id, doodle_id):
         """
         Create new post
         """
-        post = Post(None, user_id, doodle_id, None, 0)
+        post = Post(user_id, doodle_id)
         db.session.add(post)
         db.session.commit()
         return post
     
     @staticmethod
-    def update(pid, user_id,doodle_id,):
+    def update(pid, user_id, doodle_id):
         """
         Update existing post
         """
@@ -121,76 +119,37 @@ class Post(db.Model):
         return post
 
 @dataclass
-class Blocking(db.Model):
-    __tablename__ = "blocking"
+class Follows(db.Model):
+    __tablename__ = "follows"
 
-    blocking_id: int
-    blockee_uid: int
-    blocked_uid: int
+    follow_id: int
+    follower_id: int
+    followee_id: int
 
-    blocking_id = db.Column(db.Integer, primary_key=True) # to be used for query optimazation
-    blockee_uid = db.Column(db.Integer, nullable=False)
-    blocked_uid = db.Column(db.Integer, nullable=False)
+    follow_id = db.Column(db.Integer, primary_key=True) # to be used for query optimazation
+    follower_id = db.Column(db.Integer, nullable= False)
+    followee_id = db.Column(db.Integer, nullable= False)
 
-    def __init__(self, blocking_id, blockee_uid, blocked_uid):
-        self.blocking_id = blocking_id
-        self.blockee_uid = blockee_uid
-        self.blocked_uid = blocked_uid
-
+    def __init__(self, follower_id, followee_id):
+        self.follower_id = follower_id
+        self.followee_id = followee_id
 
     @staticmethod
-    def create(blockee_uid, blocked_uid):
-        """
-        Create new instance of a user blocking another user
-        """
-        block = Blocking(blockee_uid, blocked_uid)
-        db.session.add(block)
-        db.session.commit()
-        return block
-    
-    @staticmethod
-    def delete(blocking_id):
-        """
-        Delete blocking of a user
-        """
-        block = Blocking.query.filter_by(blocking_id= blocking_id).one()
-        db.session.delete(block)
-        db.session.commit()
-        return block
-
-@dataclass
-class Following(db.Model):
-    __tablename__ = "following"
-
-    following_id: int
-    followee_uid: int
-    followed_uid: int
-
-    following_id = db.Column(db.Integer, primary_key=True) # to be used for query optimazation
-    followee_uid = db.Column(db.Integer, nullable= False)
-    followed_uid = db.Column(db.Integer, nullable= False)
-
-    def __init__(self, following_id, followee_uid, followed_uid):
-        self.following_id = following_id
-        self.followee_uid = followee_uid
-        self.followed_uid = followed_uid
-
-    @staticmethod
-    def create(followee_uid, followed_uid):
+    def create(follower_id, followee_id):
         """
         Create new instance of a user following another user
         """
-        follow = Following(followee_uid, followed_uid)
+        follow = Follows(follower_id, followee_id)
         db.session.add(follow)
         db.session.commit()
         return follow
 
     @staticmethod
-    def delete(following_id):
+    def delete(follow_id):
         """
         Delete following of a user
         """
-        follow = Following.query.filter_by(following_id = following_id).one()
+        follow = Follows.query.filter_by(follow_id = follow_id).one()
         db.session.delete(follow)
         db.session.commit()
         return follow
@@ -233,3 +192,41 @@ class Likes(db.Model):
         db.session.delete(like)
         db.session.commit()
         return like
+
+# @dataclass
+# class Blocks(db.Model):
+#     __tablename__ = "blocks"
+
+#     block_id: int
+#     blockee_uid: int
+#     blocked_uid: int
+
+#     blocking_id = db.Column(db.Integer, primary_key=True) # to be used for query optimazation
+#     blockee_uid = db.Column(db.Integer, nullable=False)
+#     blocked_uid = db.Column(db.Integer, nullable=False)
+
+#     def __init__(self, blocking_id, blockee_uid, blocked_uid):
+#         self.blocking_id = blocking_id
+#         self.blockee_uid = blockee_uid
+#         self.blocked_uid = blocked_uid
+
+
+#     @staticmethod
+#     def create(blockee_uid, blocked_uid):
+#         """
+#         Create new instance of a user blocking another user
+#         """
+#         block = Blocking(blockee_uid, blocked_uid)
+#         db.session.add(block)
+#         db.session.commit()
+#         return block
+    
+#     @staticmethod
+#     def delete(blocking_id):
+#         """
+#         Delete blocking of a user
+#         """
+#         block = Blocking.query.filter_by(blocking_id= blocking_id).one()
+#         db.session.delete(block)
+#         db.session.commit()
+#         return block

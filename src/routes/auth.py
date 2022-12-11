@@ -63,7 +63,7 @@ def register():
     set_refresh_cookies(resp, refresh_token)
     return resp, 201
 
-@auth_bp.route('/logout')
+@auth_bp.route('/logout', methods=['POST'])
 def logout():
     resp = jsonify({'logout': True})
     unset_jwt_cookies(resp)

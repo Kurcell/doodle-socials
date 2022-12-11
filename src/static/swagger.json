@@ -109,7 +109,7 @@
             "content" : {
               "text/plain":{
                 "schema":{
-                  "$ref": "#/components/schemas/idBody"
+                  "$ref": "#/components/schemas/messageBody"
                 }
               }
             }
@@ -140,7 +140,7 @@
             "content" : {
               "text/plain":{
                 "schema":{
-                  "$ref": "#/components/schemas/idBody"
+                  "$ref": "#/components/schemas/messageBody"
                 }
               }
             }
@@ -160,7 +160,7 @@
             "content" : {
               "text/plain":{
                 "schema":{
-                  "$ref": "#/components/schemas/idBody"
+                  "$ref": "#/components/schemas/messageBody"
                 }
               }
             }
@@ -192,6 +192,45 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/follow": {
+      "put": {
+        "parameters": [
+          {
+            "name": "uid",
+            "in": "query",
+            "required": false,
+            "description": "ID of the user to be followed.",
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Users"
+        ],
+        "summary": "Updates follow status between an authenticated user and a given user.",
+        "responses": {
+          "201": {
+            "description": "CREATED",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/follow"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/follow"
                 }
               }
             }
@@ -349,22 +388,30 @@
     },
     "/post/like": {
       "put": {
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "query",
+            "required": false,
+            "description": "ID of the post to be liked.",
+            "type": "string"
+          }
+        ],
         "tags": [
           "Posts"
         ],
-        "summary": "Updates like status betweena user and a post",
-        "requestBody": {
-          "description": "Post Like Request Body.",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/postLikeBody"
+        "summary": "Updates like status between an authenticated user and a post.",
+        "responses": {
+          "201": {
+            "description": "CREATED",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/like"
+                }
               }
             }
-          }
-        },
-        "responses": {
+          },
           "200": {
             "description": "OK",
             "content": {
@@ -404,17 +451,10 @@
     "/posts/discover": {
       "parameters": [
         {
-          "name": "uid",
-          "in": "query",
-          "required": false,
-          "description": "ID of the user making request.",
-          "type": "string"
-        },
-        {
           "name": "page",
           "in": "query",
           "required": false,
-          "description": "Page number for pagination purposes",
+          "description": "Page number for pagination purposes.",
           "type": "string"
         }
       ],
@@ -422,7 +462,7 @@
         "tags": [
           "Posts"
         ],
-        "summary": "Reads all posts from database from users that a given user isn't following.",
+        "summary": "Reads all posts from database from users that an authenitcated user isn't following.",
         "responses": {
           "200": {
             "description": "OK",
@@ -431,7 +471,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/post"
+                    "$ref": "#/components/schemas/postFeedBody"
                   }
                 }
               }
@@ -443,17 +483,10 @@
     "/posts/following": {
       "parameters": [
         {
-          "name": "uid",
-          "in": "query",
-          "required": false,
-          "description": "ID of the user making request.",
-          "type": "string"
-        },
-        {
           "name": "page",
           "in": "query",
           "required": false,
-          "description": "Page number for pagination purposes",
+          "description": "Page number for pagination purposes.",
           "type": "string"
         }
       ],
@@ -461,7 +494,7 @@
         "tags": [
           "Posts"
         ],
-        "summary": "Reads all posts from database from users that a given user is following.",
+        "summary": "Reads all posts from database from users that an authenitcated user is following.",
         "responses": {
           "200": {
             "description": "OK",
@@ -470,7 +503,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/post"
+                    "$ref": "#/components/schemas/postFeedBody"
                   }
                 }
               }
@@ -576,21 +609,12 @@
   },
   "components": {
     "schemas": {
-      "idBody": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "string"
-          }
-        }
-      },
       "messageBody": {
         "type": "object",
         "properties": {
           "message": {
-            "type": "string",
-            "format": "string"
+            "type": "boolean",
+            "format": "boolean"
           }
         }
       },
@@ -610,12 +634,17 @@
       "authBody": {
         "type": "object",
         "properties": {
-          "auth": {
+          "uid": {
             "type": "string",
             "format": "string"
           },
-          "user": {
-            "$ref": "#/components/schemas/user"
+          "username": {
+            "type": "string",
+            "format": "string"
+          },
+          "screenname": {
+            "type": "string",
+            "format": "string"
           }
         }
       },
@@ -694,6 +723,23 @@
           }
         }
       },
+      "follow": {
+        "type": "object",
+        "properties": {
+          "follow_id": {
+            "type": "integer",
+            "format": "integer"
+          },
+          "follower_id": {
+            "type": "integer",
+            "format": "integer"
+          },
+          "followee_id": {
+            "type": "integer",
+            "format": "integer"
+          }
+        }
+      },
       "post": {
         "type": "object",
         "properties": {
@@ -719,6 +765,43 @@
           }
         }
       },
+      "postFeedBody": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "integer",
+            "format": "integer"
+          },
+          "username": {
+            "type": "string",
+            "format": "string"
+          },
+          "screenname": {
+            "type": "string",
+            "format": "string"
+          },
+          "liked": {
+            "type": "boolean",
+            "format": "boolean"
+          },
+          "pid": {
+            "type": "integer",
+            "format": "integer"
+          },
+          "doodle_id": {
+            "type": "integer",
+            "format": "integer"
+          },
+          "likes": {
+            "type": "integer",
+            "format": "integer"
+          },
+          "createdat": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
       "postPostBody": {
         "type": "object",
         "properties": {
@@ -727,19 +810,6 @@
             "format": "integer"
           },
           "doodle_id": {
-            "type": "integer",
-            "format": "integer"
-          }
-        }
-      },
-      "postLikeBody": {
-        "type": "object",
-        "properties": {
-          "uid": {
-            "type": "integer",
-            "format": "integer"
-          },
-          "pid": {
             "type": "integer",
             "format": "integer"
           }

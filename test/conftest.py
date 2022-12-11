@@ -1,13 +1,14 @@
 import pytest
 from src import create_app, db
-from src.models.models import User
+from src.models.models import User, Post, Follows, Likes
 
 @pytest.fixture(scope="session")
 def app():
     app = create_app()
     app.config.update({
         "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+        'JWT_SECRET_KEY': 'doodle-secret-api'
     })
 
     with app.app_context():
@@ -27,32 +28,56 @@ def runner(app):
     return app.test_cli_runner()
 
 def data_setup():
-        user1 = User('wakawaka',
-            'Shakira',
-            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrNuITVVbAt4BzGSgIdaVY2n9v2xH4uJSVxw&usqp=CAU',
-            'HipsDontLie2',
-            'lolelole@ooo.com'
-        )
-        user2 = User('alealejandro',
-            'Lady Gaga',
-            'https://images-prod.dazeddigital.com/640/0-58-1080-720/azure/dazed-prod/1320/8/1328021.jpg',
-            'BadRomance83',
-            'papapapa@razzi.com'
-        )
-        user3 = User('toxic',
-            'Britney Spears',
-            'https://cdn.justjared.com/wp-content/uploads/headlines/2021/01/britney-spears-justin-timberlake-jean-outfit-anniversary.jpg',
-            'DeminEverything',
-            'womanizer@2007.com'
-        )
-        user4 = User('rocketman',
-            'Elton John',
-            'https://i.guim.co.uk/img/media/41977eef3a48fff6707e501c019a54bdb7d41a41/9_69_7324_4395/master/7324.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=b08a33cf9ec842cfa6f7ab74fedba4f4',
-            'SaturdayN1ght',
-            'Gnomeo@yellowbrickroad.com'
-        )
-        db.session.add(user1)
-        db.session.add(user2)
-        db.session.add(user3)
-        db.session.add(user4)
+        db.session.add(User('purcell',
+            'Kevin',
+            'https://abdielcortes.github.io/capstone-website/images/kevin.jpeg',
+            'HipsDontLie97',
+            'kevin.purcell@upr.edu'
+        ))
+        db.session.add(Post(1, 1))
+        db.session.add(Post(1, 2))
+        db.session.add(Post(1, 3))
+        db.session.add(Post(1, 4))
+        
+        db.session.add(User('puig',
+            'Theo',
+            'https://abdielcortes.github.io/capstone-website/images/theo.jpeg',
+            'WillyWonderland23',
+            'theo.puig@upr.edu'
+        ))
+        db.session.add(Post(2, 5))
+        db.session.add(Post(2, 6))
+        db.session.add(Post(2, 7))
+        db.session.add(Post(2, 8))
+
+        db.session.add(User('cortes',
+            'Abdiel',
+            'https://abdielcortes.github.io/capstone-website/images/abdiel.jpg',
+            'Godmode225',
+            'abdiel.cortes@upr.edu'
+        ))
+        db.session.add(Post(3, 9))
+        db.session.add(Post(3, 10))
+        db.session.add(Post(3, 11))
+        db.session.add(Post(3, 12))
+
+        db.session.add(User('tua',
+            'Jose',
+            'https://abdielcortes.github.io/capstone-website/images/jose.jpg',
+            'KeqingSimp44',
+            'jose.tua@upr.edu'
+        ))
+        db.session.add(Post(4, 13))
+        db.session.add(Post(4, 14))
+        db.session.add(Post(4, 15))
+        db.session.add(Post(4, 16))
+
+        db.session.add(Follows(1, 2))
+        db.session.add(Follows(1, 3))
+        db.session.add(Follows(2, 3))
+        db.session.add(Follows(3, 2))
+        db.session.add(Follows(4, 1))
+        db.session.add(Follows(4, 2))
+        db.session.add(Follows(4, 3))
+
         db.session.commit()
