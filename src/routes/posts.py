@@ -6,8 +6,28 @@ from .. import db
 post_bp = Blueprint('posts', __name__)
 
 @post_bp.route("/post/<int:id>", methods=['GET'])
+@jwt_required()
 def readOne(id):
-    return jsonify(Post.query.filter_by(pid = id).one())
+    uid = current_user.uid
+    post = [
+        {
+            'uid': i.uid,
+            'username': i.username,
+            'screenname': i.screenname,
+            'liked': i.liked,
+            'pid': i.pid,
+            'doodle_id': i.doodle_id,
+            'likes': i.likes,
+            'createdat': i.createdat
+        }
+        for i in [db.session.execute("""select users.uid, users.username, users.screenname, post.pid, post.doodle_id, post.likes, likes.like_id IS NOT NULL as liked, post.createdat
+            from post
+            left join likes on post.pid = likes.liked_post and likes.liking_user = :uid
+            inner join users on post.user_id = users.uid
+            where post.pid = :pid
+        """, {'uid': uid, 'pid': id}).first()]
+        ]
+    return jsonify(post)
 
 @post_bp.route("/posts", methods=['GET'])
 def readMany():
