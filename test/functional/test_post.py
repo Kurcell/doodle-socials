@@ -20,6 +20,12 @@ def test_post_readOne(client):
     WHEN the readOne route for posts is called
     THEN check that valid requests return valid responses
     """
+    log_in_data = {
+        'email': 'kevin.purcell@upr.edu',
+        'password': 'HipsDontLie97'
+    }
+    client.post('login', json=log_in_data)
+
     response = client.get('/post/2')
     post = json.loads(response.data)
     
