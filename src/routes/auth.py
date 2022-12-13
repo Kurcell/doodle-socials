@@ -25,7 +25,8 @@ def verify():
         {
             'uid': current_user.uid,
             'username': current_user.username, 
-            'screenname': current_user.screenname
+            'screenname': current_user.screenname,
+            'profile': current_user.profile
         }   
      })
 
