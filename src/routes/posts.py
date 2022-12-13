@@ -29,12 +29,13 @@ def readMany():
             'uid': i.uid,
             'username': i.username,
             'screenname': i.screenname,
+            'profile': i.profile,
             'pid': i.pid,
             'doodle_id': i.doodle_id,
             'likes': i.likes,
             'createdat': i.createdat
         }
-        for i in Post.query.join(User, Post.user_id == User.uid).add_columns(User.uid, User.screenname, User.username, Post.pid, Post.doodle_id, Post.likes, Post.createdat).all()
+        for i in Post.query.join(User, Post.user_id == User.uid).add_columns(User.uid, User.screenname, User.username, User.profile, Post.pid, Post.doodle_id, Post.likes, Post.createdat).all()
     ]
     return jsonify(posts)
 
@@ -84,13 +85,14 @@ def post_discover():
             'uid': i.uid,
             'username': i.username,
             'screenname': i.screenname,
+            'profile': i.profile,
             'liked': i.liked,
             'pid': i.pid,
             'doodle_id': i.doodle_id,
             'likes': i.likes,
             'createdat': i.createdat
         }
-        for i in db.session.execute("""select users.uid, users.username, users.screenname, post.pid, post.doodle_id, post.likes, likes.like_id IS NOT NULL as liked, post.createdat
+        for i in db.session.execute("""select users.uid, users.username, users.screenname, users.profile, post.pid, post.doodle_id, post.likes, likes.like_id IS NOT NULL as liked, post.createdat
             from post
             left join likes on post.pid = likes.liked_post and likes.liking_user = :uid
             inner join users on post.user_id = users.uid
@@ -114,12 +116,13 @@ def post_following():
             'uid': i.uid,
             'username': i.username,
             'screenname': i.screenname,
+            'profile': i.profile,
             'pid': i.pid,
             'doodle_id': i.doodle_id,
             'likes': i.likes,
             'createdat': i.createdat
         }
-        for i in db.session.execute("""select users.uid, users.username, users.screenname, post.pid, post.doodle_id, post.likes, likes.like_id IS NOT NULL as liked, post.createdat
+        for i in db.session.execute("""select users.uid, users.username, users.screenname, users.profile, post.pid, post.doodle_id, post.likes, likes.like_id IS NOT NULL as liked, post.createdat
             from post
             left join likes on post.pid = likes.liked_post and likes.liking_user = :uid
             inner join users on post.user_id = users.uid
@@ -141,12 +144,13 @@ def post_portfolio():
             'uid': i.uid,
             'username': i.username,
             'screenname': i.screenname,
+            'profile': i.profile,
             'pid': i.pid,
             'doodle_id': i.doodle_id,
             'likes': i.likes,
             'createdat': i.createdat
         }
-        for i in db.session.execute("""select users.uid, users.username, users.screenname, post.pid, post.doodle_id, post.likes, likes.like_id IS NOT NULL as liked, post.createdat
+        for i in db.session.execute("""select users.uid, users.username, users.screenname, users.profile, post.pid, post.doodle_id, post.likes, likes.like_id IS NOT NULL as liked, post.createdat
             from post
             left join likes on post.pid = likes.liked_post and likes.liking_user = :uid
             inner join users on post.user_id = users.uid
